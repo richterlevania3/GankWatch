@@ -1,13 +1,19 @@
 # GankWatch
 
-A tiny World of Warcraft **1.12 (vanilla)** addon that warns you the instant any
-player on your friends list logs on — a banner, a screen flash, a chat line, and
-a sound. Built for hardcore / open-PvP servers where knowing a known ganker just
-came online is the difference between running and dying.
+A tiny World of Warcraft **1.12 (vanilla)** addon for hardcore / open-PvP
+servers. It does two things:
 
-Detection is 100% friends-list based (it diffs each friend's online/offline
-state), so it is **localization-proof** and works **cross-faction** on servers
-that allow cross-faction friends (e.g. OctoWoW).
+1. **Friend watch** — warns you the instant any player on your friends list logs
+   on (banner + screen flash + chat + sound). Detection is 100% friends-list
+   based (it diffs each friend's online/offline state), so it is
+   **localization-proof** and works **cross-faction** on servers that allow
+   cross-faction friends (e.g. OctoWoW).
+2. **Zone Horde scan** — every 30s it runs a background `/who` on your *current*
+   zone, filtered by Horde race, and warns you about any enemy players present.
+   Requires a server where `/who` returns the opposite faction. Because a bare
+   zone query may only return your own side, it queries one Horde race at a time
+   (Orc / Troll / Tauren / Undead) and rotates through all four each cycle, with
+   the sends spaced out to respect the client's `/who` throttle.
 
 ## Install
 
@@ -28,6 +34,8 @@ Then fully **restart** the client (a new addon folder is not picked up by
 | `/gankwatch add <name>` | Watch one more player (adds them to friends) |
 | `/gankwatch remove <name>` | Stop watching (removes the friend) |
 | `/gankwatch list` | Show the watchlist with online/offline status |
+| `/gankwatch who` | Toggle the zone Horde scan on/off |
+| `/gankwatch scan` | Run a zone Horde scan right now |
 | `/gankwatch test` | Preview the alert |
 
 `/gkw` is a short alias for `/gankwatch`.

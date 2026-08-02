@@ -1,7 +1,7 @@
 ## Interface: 11200
 ## Title: GankWatch
-## Notes: Alerts (banner + sound) when any player on your friends list logs on. Cross-faction friend tracking.
+## Notes: Alerts when a friends-list player logs on, and scans your current zone every 30s for Horde. Cross-faction.
 ## Author: richterlevania3
-## Version: 1.0
+## Version: 1.1
 
 GankWatch.lua
