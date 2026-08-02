@@ -1,0 +1,7 @@
+## Interface: 11200
+## Title: GankWatch
+## Notes: Alerts (banner + sound) when any player on your friends list logs on. Cross-faction friend tracking.
+## Author: richterlevania3
+## Version: 1.0
+
+GankWatch.lua
