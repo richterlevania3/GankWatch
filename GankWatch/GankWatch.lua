@@ -25,8 +25,8 @@ local HORDE_RACES = { orc = true, troll = true, tauren = true, undead = true }
 -- The race filters sent to /who each cycle (proper case, as /who expects).
 local RACE_QUEUE = { "Orc", "Troll", "Tauren", "Undead" }
 
-local FRIEND_POLL_EVERY = 60   -- re-request the friends list this often (s)
-local WHO_EVERY         = 90   -- full zone scan interval (s) -- raised from 30 to cut /who stutter
+local FRIEND_POLL_EVERY = 30   -- re-request the friends list this often (s)
+local WHO_EVERY         = 30   -- full zone scan interval (s)
 local STEP_GAP          = 1.5  -- min delay between the per-race /who sends (s)
 local STEP_TIMEOUT      = 3    -- give up waiting on one race's result after this (s)
 
@@ -48,7 +48,6 @@ local stepDoneAt = 0
 local currentZone = ""
 local present   = {}       -- horde found this scan: [name] = {level,class,race}
 local seenHorde = {}       -- horde present last completed scan (for diffing)
-local inCombat  = false    -- pause /who + friend polling in combat (stutter guard)
 
 -- ---------------------------------------------------------------------------
 -- Output
@@ -206,8 +205,6 @@ f:RegisterEvent("PLAYER_ENTERING_WORLD")
 f:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 f:RegisterEvent("FRIENDLIST_UPDATE")
 f:RegisterEvent("WHO_LIST_UPDATE")
-f:RegisterEvent("PLAYER_REGEN_DISABLED")   -- entering combat
-f:RegisterEvent("PLAYER_REGEN_ENABLED")    -- leaving combat
 
 f:SetScript("OnEvent", function()
   if event == "FRIENDLIST_UPDATE" then
@@ -216,11 +213,6 @@ f:SetScript("OnEvent", function()
     WhoResult()
   elseif event == "ZONE_CHANGED_NEW_AREA" then
     ResetZone()
-  elseif event == "PLAYER_REGEN_DISABLED" then
-    inCombat = true
-    if scanning then AbortScan() end       -- stop any scan the moment combat starts
-  elseif event == "PLAYER_REGEN_ENABLED" then
-    inCombat = false
   else -- PLAYER_LOGIN / PLAYER_ENTERING_WORLD
     ShowFriends()
     ResetZone()
@@ -228,10 +220,6 @@ f:SetScript("OnEvent", function()
 end)
 
 f:SetScript("OnUpdate", function()
-  -- pause all periodic network churn while in combat (micro-stutter guard).
-  -- Friend-login alerts still fire via FRIENDLIST_UPDATE server pushes in OnEvent.
-  if inCombat then return end
-
   -- friend list poll
   friendPoll = friendPoll + arg1
   if friendPoll >= FRIEND_POLL_EVERY then
